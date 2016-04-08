@@ -1,0 +1,20 @@
+{
+  "name": "udc",
+  "description": "uDC",
+  "chip": "STM32F303CB",
+  "required_packages": [
+    "common_msgs",
+    "sensor_msgs",
+    "sensors",
+    "led"
+  ],
+  "chibios_components": [
+    "rt",
+    "hal",
+    "adc",
+    "ext",
+    "pal",
+    "pwm",
+    "syscalls"
+  ]
+}
