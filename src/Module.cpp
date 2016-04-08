@@ -3,21 +3,36 @@
 #include "ch.h"
 #include "hal.h"
 
+#include <Core/HW/GPIO.hpp>
 #include <Core/HW/QEI.hpp>
+#include <Core/HW/PWM.hpp>
 #include <Core/MW/Thread.hpp>
 #include <Module.hpp>
 #include <sensors/QEI.hpp>
+#include <actuators/MC33926.hpp>
 
 static Core::HW::QEI_<Core::HW::QEI_4> ENCODER_DEVICE;
 
-using LED_PAD = Core::HW::Pad_<Core::HW::GPIO_C, LED_PIN>;
+static Core::HW::PWMChannel_<Core::HW::PWM_1, 0> PWM_CHANNEL_0;
+static Core::HW::PWMChannel_<Core::HW::PWM_1, 1> PWM_CHANNEL_1;
+
+using LED_PAD = Core::HW::Pad_<Core::HW::GPIO_F, LED_PIN>;
 static LED_PAD _led;
+
+using HBRIDGE_ENABLE_PAD = Core::HW::Pad_<Core::HW::GPIO_B, GPIOB_MOTOR_ENABLE>;
+using HBRIDGE_D1_PAD = Core::HW::Pad_<Core::HW::GPIO_A, GPIOA_MOTOR_D1>;
+
+static HBRIDGE_ENABLE_PAD _hbridge_enable;
+static HBRIDGE_D1_PAD _hbridge_d1;
 
 static sensors::QEI       _qei_device(ENCODER_DEVICE);
 static sensors::QEI_Delta _qei_delta(_qei_device);
 
-sensors::QEI_Delta& Module::qei = _qei_delta;
+static actuators::MC33926 _pwm_device(PWM_CHANNEL_0, PWM_CHANNEL_1, _hbridge_enable, _hbridge_d1);
+static actuators::MC33926_SignMagnitude _pwm(_pwm_device);
 
+sensors::QEI_Delta& Module::qei = _qei_delta;
+actuators::MC33926_SignMagnitude& Module::pwm = _pwm;
 
 static THD_WORKING_AREA(wa_info, 1024);
 static Core::MW::RTCANTransport rtcantra(RTCAND1);
@@ -28,6 +43,17 @@ RTCANConfig rtcan_config = {
 
 QEIConfig qei_config = {
 	QEI_MODE_QUADRATURE, QEI_BOTH_EDGES, QEI_DIRINV_FALSE,
+};
+
+/*
+ * PWM configuration.
+ */
+static PWMConfig pwmcfg = {
+	36000000,                       /* 36MHz PWM clock.   */
+	4096,                           /* 12-bit PWM, 9KHz frequency. */
+	nullptr,                          {{PWM_OUTPUT_ACTIVE_HIGH, NULL}, {PWM_OUTPUT_ACTIVE_HIGH, NULL}, {PWM_OUTPUT_DISABLED, NULL}, {
+													PWM_OUTPUT_DISABLED, NULL
+												}}, 0,
 };
 
 #ifndef CORE_MODULE_NAME
@@ -58,6 +84,7 @@ Module::initialize()
 
 
 		ENCODER_DEVICE.start(&qei_config);
+		pwmStart(Core::HW::PWM_1::driver, &pwmcfg);
 
 		initialized = true;
 	}

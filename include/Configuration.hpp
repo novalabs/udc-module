@@ -1,6 +1,7 @@
 #pragma once
 
 #define USE_SENSOR_QEI
+#define USE_ACTUATOR_MC33926
 
 #include <Core/MW/Time.hpp>
 

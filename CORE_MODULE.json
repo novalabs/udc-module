@@ -3,10 +3,12 @@
   "description": "uDC",
   "chip": "STM32F303CB",
   "required_packages": [
+    "actuators",
+    "actuator_msgs",
     "common_msgs",
+    "led",
     "sensor_msgs",
-    "sensors",
-    "led"
+    "sensors"
   ],
   "chibios_components": [
     "rt",
