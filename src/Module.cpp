@@ -1,3 +1,9 @@
+/* COPYRIGHT (c) 2016 Nova Labs SRL
+ *
+ * All rights reserved. All use of this software and documentation is
+ * subject to the License Agreement located in the file LICENSE.
+ */
+ 
 #include <Core/MW/Middleware.hpp>
 
 #include "ch.h"
@@ -20,10 +26,10 @@ using LED_PAD = Core::HW::Pad_<Core::HW::GPIO_F, LED_PIN>;
 static LED_PAD _led;
 
 using HBRIDGE_ENABLE_PAD = Core::HW::Pad_<Core::HW::GPIO_B, GPIOB_MOTOR_ENABLE>;
-using HBRIDGE_D1_PAD = Core::HW::Pad_<Core::HW::GPIO_A, GPIOA_MOTOR_D1>;
+using HBRIDGE_D1_PAD     = Core::HW::Pad_<Core::HW::GPIO_A, GPIOA_MOTOR_D1>;
 
 static HBRIDGE_ENABLE_PAD _hbridge_enable;
-static HBRIDGE_D1_PAD _hbridge_d1;
+static HBRIDGE_D1_PAD     _hbridge_d1;
 
 static sensors::QEI       _qei_device(ENCODER_DEVICE);
 static sensors::QEI_Delta _qei_delta(_qei_device);
@@ -38,22 +44,22 @@ static THD_WORKING_AREA(wa_info, 1024);
 static Core::MW::RTCANTransport rtcantra(RTCAND1);
 
 RTCANConfig rtcan_config = {
-	1000000, 100, 60
+   1000000, 100, 60
 };
 
 QEIConfig qei_config = {
-	QEI_MODE_QUADRATURE, QEI_BOTH_EDGES, QEI_DIRINV_FALSE,
+   QEI_MODE_QUADRATURE, QEI_BOTH_EDGES, QEI_DIRINV_FALSE,
 };
 
 /*
  * PWM configuration.
  */
 static PWMConfig pwmcfg = {
-	36000000,                       /* 36MHz PWM clock.   */
-	4096,                           /* 12-bit PWM, 9KHz frequency. */
-	nullptr,                          {{PWM_OUTPUT_ACTIVE_HIGH, NULL}, {PWM_OUTPUT_ACTIVE_HIGH, NULL}, {PWM_OUTPUT_DISABLED, NULL}, {
-													PWM_OUTPUT_DISABLED, NULL
-												}}, 0,
+   36000000,                         /* 36MHz PWM clock.   */
+   4096,                             /* 12-bit PWM, 9KHz frequency. */
+   nullptr,                          {{PWM_OUTPUT_ACTIVE_HIGH, NULL}, {PWM_OUTPUT_ACTIVE_HIGH, NULL}, {PWM_OUTPUT_DISABLED, NULL}, {
+                                         PWM_OUTPUT_DISABLED, NULL
+                                      }}, 0,
 };
 
 #ifndef CORE_MODULE_NAME
@@ -70,39 +76,39 @@ Module::initialize()
 {
 //	CORE_ASSERT(Core::MW::Middleware::instance.is_stopped()); // TODO: capire perche non va...
 
-	static bool initialized = false;
+   static bool initialized = false;
 
-	if (!initialized) {
-		halInit();
-		qeiInit();
+   if (!initialized) {
+      halInit();
+      qeiInit();
 
-		chSysInit();
+      chSysInit();
 
-		Core::MW::Middleware::instance.initialize(wa_info, sizeof(wa_info), Core::MW::Thread::LOWEST);
-		rtcantra.initialize(rtcan_config);
-		Core::MW::Middleware::instance.start();
+      Core::MW::Middleware::instance.initialize(wa_info, sizeof(wa_info), Core::MW::Thread::LOWEST);
+      rtcantra.initialize(rtcan_config);
+      Core::MW::Middleware::instance.start();
 
 
-		ENCODER_DEVICE.start(&qei_config);
-		pwmStart(Core::HW::PWM_1::driver, &pwmcfg);
+      ENCODER_DEVICE.start(&qei_config);
+      pwmStart(Core::HW::PWM_1::driver, &pwmcfg);
 
-		initialized = true;
-	}
+      initialized = true;
+   }
 
-	return initialized;
+   return initialized;
 } // Board::initialize
 
 // Leftover from CoreBoard (where LED_PAD cannot be defined
 void
 Core::MW::CoreModule::Led::toggle()
 {
-	_led.toggle();
+   _led.toggle();
 }
 
 void
 Core::MW::CoreModule::Led::write(
-		unsigned on
+   unsigned on
 )
 {
-	_led.write(on);
+   _led.write(on);
 }
