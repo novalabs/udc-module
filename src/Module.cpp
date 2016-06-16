@@ -14,8 +14,8 @@
 #include <Core/HW/PWM.hpp>
 #include <Core/MW/Thread.hpp>
 #include <Module.hpp>
-#include <sensors/QEI.hpp>
-#include <actuators/MC33926.hpp>
+#include <QEI_driver/QEI.hpp>
+#include <MC33926_driver/MC33926.hpp>
 
 static Core::HW::QEI_<Core::HW::QEI_4> ENCODER_DEVICE;
 

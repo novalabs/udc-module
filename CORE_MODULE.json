@@ -3,12 +3,14 @@
   "description": "uDC",
   "chip": "STM32F303CB",
   "required_packages": [
-    "actuators",
-    "actuator_msgs",
     "common_msgs",
     "led",
+    "MC33926_driver",
+    "actuator_msgs",
+    "actuator_subscriber",
+    "QEI_driver",
     "sensor_msgs",
-    "sensors"
+    "sensor_publisher"
   ],
   "chibios_components": [
     "rt",
