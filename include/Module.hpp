@@ -6,28 +6,32 @@
 
 #pragma once
 
-#include <Configuration.hpp>
-#include <Core/MW/CoreModule.hpp>
-#include <Core/MW/CoreSensor.hpp>
+#include <ModuleConfiguration.hpp>
+#include <core/mw/CoreModule.hpp>
+#include <core/mw/CoreSensor.hpp>
 
 namespace sensors {}
 
 // Forward declarations
-namespace sensors {
-   class QEI_Delta;
+namespace core {
+namespace QEI_driver {
+class QEI_Delta;
+}
 }
 
-namespace actuators {
-   class MC33926_SignMagnitude;
+namespace core {
+namespace MC33926_driver {
+class MC33926_SignMagnitude;
+}
 }
 
 class Module:
-   public Core::MW::CoreModule
+   public core::mw::CoreModule
 {
 public:
 // --- DEVICES ----------------------------------------------------------------
-   static sensors::QEI_Delta& qei;
-   static actuators::MC33926_SignMagnitude& pwm;
+   static core::QEI_driver::QEI_Delta& qei;
+   static core::MC33926_driver::MC33926_SignMagnitude& pwm;
 // ----------------------------------------------------------------------------
 
    static bool
