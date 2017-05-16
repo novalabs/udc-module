@@ -24,19 +24,30 @@ class MC33926_SignMagnitude;
 }
 }
 
+#if CORE_USE_CONFIGURATION_STORAGE
+namespace core {
+namespace mw {
+class CoreConfigurationStorage;
+}
+}
+#endif
+
 class Module:
-   public core::mw::CoreModule
+    public core::mw::CoreModule
 {
 public:
 // --- DEVICES ----------------------------------------------------------------
-   static core::QEI_driver::QEI_Delta& qei;
-   static core::MC33926_driver::MC33926_SignMagnitude& pwm;
+    static core::QEI_driver::QEI_Delta& qei;
+    static core::MC33926_driver::MC33926_SignMagnitude& pwm;
 // ----------------------------------------------------------------------------
 
-   static bool
-   initialize();
+    static bool
+    initialize();
 
 
-   Module();
-   virtual ~Module() {}
+#if CORE_USE_CONFIGURATION_STORAGE
+    static core::mw::CoreConfigurationStorage& configurationStorage;
+#endif
+    Module();
+    virtual ~Module() {}
 };
