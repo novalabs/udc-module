@@ -9,8 +9,6 @@
 #include <ModuleConfiguration.hpp>
 #include <core/mw/CoreModule.hpp>
 
-namespace sensors {}
-
 // Forward declarations
 namespace core {
 namespace QEI_driver {
@@ -23,14 +21,6 @@ namespace MC33926_driver {
 class MC33926_SignMagnitude;
 }
 }
-
-#if CORE_USE_CONFIGURATION_STORAGE
-namespace core {
-namespace mw {
-class CoreConfigurationStorage;
-}
-}
-#endif
 
 class Module:
     public core::mw::CoreModule
@@ -45,9 +35,6 @@ public:
     initialize();
 
 
-#if CORE_USE_CONFIGURATION_STORAGE
-    static core::mw::CoreConfigurationStorage& configurationStorage;
-#endif
     Module();
     virtual ~Module() {}
 };

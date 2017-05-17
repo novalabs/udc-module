@@ -64,12 +64,6 @@ RTCANConfig rtcan_config = {
     1000000, 100, 60
 };
 
-// ----------------------------------------------------------------------------
-// CoreModule STM32FlashConfigurationStorage
-// ----------------------------------------------------------------------------
-#include <core/snippets/CoreModuleSTM32FlashConfigurationStorage.hpp>
-// ----------------------------------------------------------------------------
-
 core::mw::Middleware
 core::mw::Middleware::instance(
     ModuleConfiguration::MODULE_NAME
@@ -102,6 +96,12 @@ Module::initialize()
 
     return initialized;
 } // Board::initialize
+
+// ----------------------------------------------------------------------------
+// CoreModule STM32FlashConfigurationStorage
+// ----------------------------------------------------------------------------
+#include <core/snippets/CoreModuleSTM32FlashConfigurationStorage.hpp>
+// ----------------------------------------------------------------------------
 
 // ----------------------------------------------------------------------------
 // CoreModule HW specific implementation
