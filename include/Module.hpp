@@ -34,7 +34,7 @@ class Module:
 {
 public:
 // --- DEVICES ----------------------------------------------------------------
-	static core::hw::QEI& qei;
+    static core::hw::QEI&       qei;
     static core::hw::PWMMaster& pwm;
 
     static core::QEI_driver::QEI_Delta& encoder;
