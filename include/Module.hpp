@@ -11,6 +11,13 @@
 
 // Forward declarations
 namespace core {
+namespace hw {
+class QEI;
+class PWMMaster;
+}
+}
+
+namespace core {
 namespace QEI_driver {
 class QEI_Delta;
 }
@@ -27,8 +34,11 @@ class Module:
 {
 public:
 // --- DEVICES ----------------------------------------------------------------
-    static core::QEI_driver::QEI_Delta& qei;
-    static core::MC33926_driver::MC33926_SignMagnitude& pwm;
+	static core::hw::QEI& qei;
+    static core::hw::PWMMaster& pwm;
+
+    static core::QEI_driver::QEI_Delta& encoder;
+    static core::MC33926_driver::MC33926_SignMagnitude& h_bridge;
 // ----------------------------------------------------------------------------
 
     static bool
