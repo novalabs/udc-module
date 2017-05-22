@@ -1,5 +1,19 @@
+/* uDC Module template file
+ *
+ */
+
 #include <ModuleConfiguration.hpp>
 #include <Module.hpp>
+
+// --- BOARD IMPL -------------------------------------------------------------
+#include <core/hw/PWM.hpp>
+#include <core/QEI_driver/QEI.hpp>
+#include <core/MC33926_driver/MC33926.hpp>
+
+// --- MODULE -----------------------------------------------------------------
+Module module;
+
+// *** DO NOT MOVE THE CODE ABOVE THIS COMMENT *** //
 
 // --- MESSAGES ---------------------------------------------------------------
 #include <core/common_msgs/Led.hpp>
@@ -10,22 +24,38 @@
 #include <core/actuator_subscriber/Subscriber.hpp>
 #include <core/led/Subscriber.hpp>
 
-// --- BOARD IMPL -------------------------------------------------------------
-#include <core/QEI_driver/QEI.hpp>
-#include <core/MC33926_driver/MC33926.hpp>
-
-// *** DO NOT MOVE ***
-Module module;
-
 // --- TYPES ------------------------------------------------------------------
 using QEI_Publisher  = core::sensor_publisher::Publisher<ModuleConfiguration::QEI_DELTA_DATATYPE>;
 using PWM_Subscriber = core::actuator_subscriber::Subscriber<float, core::actuator_msgs::Setpoint_f32>;
 
-// --- NODES ------------------------------------------------------------------
-core::led::Subscriber led_subscriber("led_subscriber", core::os::Thread::PriorityEnum::LOWEST);
+// --- CONFIGURATIONS ---------------------------------------------------------
+core::led::SubscriberConfiguration       led_subscriber_configuration_default;
+core::QEI_driver::QEI_DeltaConfiguration encoder_configuration_default;
+QEI_Publisher::ConfigurationType         encoder_publisher_configuration_default;
+PWM_Subscriber::ConfigurationType        pwm_subscriber_configuration_default;
 
-QEI_Publisher  encoder("encoder", module.qei, core::os::Thread::PriorityEnum::NORMAL);
-PWM_Subscriber motor("actuator_sub", module.pwm, core::os::Thread::PriorityEnum::NORMAL);
+// --- NODES ------------------------------------------------------------------
+core::led::Subscriber led_subscriber("led_sub", core::os::Thread::PriorityEnum::LOWEST);
+QEI_Publisher         encoder_publisher("enc_pub", module.encoder, core::os::Thread::PriorityEnum::NORMAL);
+PWM_Subscriber        motor_subscriber("pwm_sub", module.h_bridge, core::os::Thread::PriorityEnum::NORMAL);
+
+// --- DEVICE CONFIGURATION ---------------------------------------------------
+QEIConfig qei_config = {
+    QEI_MODE_QUADRATURE, QEI_BOTH_EDGES, QEI_DIRINV_FALSE,
+};
+
+PWMConfig pwm_configuration = {
+    36000000,/* 36MHz PWM clock.   */
+    4096,    /* 12-bit PWM, 9KHz frequency. */
+    nullptr,
+    {
+        {PWM_OUTPUT_ACTIVE_HIGH,NULL},
+        {PWM_OUTPUT_ACTIVE_HIGH,NULL},
+        {PWM_OUTPUT_DISABLED,NULL},
+        {PWM_OUTPUT_DISABLED,NULL}
+    },
+    0,
+};
 
 // --- MAIN -------------------------------------------------------------------
 extern "C" {
@@ -34,37 +64,46 @@ extern "C" {
     {
         module.initialize();
 
-        // Add nodes to the node manager (== board)...
-        module.add(led_subscriber);
-        module.add(encoder);
-        module.add(motor);
+        // Device configurations
+        module.qei.start(qei_config);
+        module.pwm.start(pwm_configuration);
 
-        // Module configuration
-        core::QEI_driver::QEI_DeltaConfiguration qei_configuration;
-        qei_configuration.period = 50;
-        qei_configuration.ticks  = 1000;
-        module.qei.setConfiguration(qei_configuration);
+        // Default configuration
+        encoder_configuration_default.period = 50;
+        encoder_configuration_default.ticks  = 1024;
+        encoder_configuration_default.invert = 0;
+        led_subscriber_configuration_default.topic    = "led";
+        encoder_publisher_configuration_default.topic = "encoder";
+        pwm_subscriber_configuration_default.topic    = "pwm";
 
-        // Nodes configuration
-        core::led::SubscriberConfiguration led_subscriber_configuration;
-        led_subscriber_configuration.topic = "led";
-        led_subscriber.setConfiguration(led_subscriber_configuration);
+        // Add configurable objects to the configuration manager...
+        module.configurations().add(module.encoder, encoder_configuration_default);
+        module.configurations().add(led_subscriber, led_subscriber_configuration_default);
+        module.configurations().add(encoder_publisher, encoder_publisher_configuration_default);
+        module.configurations().add(motor_subscriber, pwm_subscriber_configuration_default);
 
-        core::sensor_publisher::Configuration encoder_configuration;
-        encoder_configuration.topic = "encoder";
-        encoder.setConfiguration(encoder_configuration);
+        // ... and load the configuration
+        module.configurations().loadFrom(module.configurationStorage());
+
+        // Add nodes to the node manager...
+        module.nodes().add(led_subscriber);
+        module.nodes().add(encoder_publisher);
+        module.nodes().add(motor_subscriber);
 
         // ... and let's play!
-        module.setup();
-        module.run();
+        module.nodes().setup();
+        module.nodes().run();
 
         // Is everything going well?
         for (;;) {
-            if (!module.isOk()) {
+            if (!module.nodes().areOk()) {
                 module.halt("This must not happen!");
             }
 
             core::os::Thread::sleep(core::os::Time::ms(500));
+
+            // Remember to feed the (watch)dog!
+            module.keepAlive();
         }
 
         return core::os::Thread::OK;
