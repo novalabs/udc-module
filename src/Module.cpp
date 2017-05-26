@@ -38,7 +38,7 @@ using HBRIDGE_ENABLE_PAD = core::hw::Pad_<core::hw::GPIO_B, GPIOB_MOTOR_ENABLE>;
 using HBRIDGE_D1_PAD     = core::hw::Pad_<core::hw::GPIO_A, GPIOA_MOTOR_D1>;
 static PWM_MASTER         _pwm_master;
 static PWM_CHANNEL_0      _pwm_channel_0;
-static PWM_CHANNEL_0      _pwm_channel_1;
+static PWM_CHANNEL_1      _pwm_channel_1;
 static HBRIDGE_ENABLE_PAD _hbridge_enable;
 static HBRIDGE_D1_PAD     _hbridge_d1;
 static core::MC33926_driver::MC33926 _pwm_device(_pwm_channel_0, _pwm_channel_1, _hbridge_enable, _hbridge_d1);
