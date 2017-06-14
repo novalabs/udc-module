@@ -13,19 +13,10 @@
 namespace core {
 namespace hw {
 class QEI;
+class Pad;
 class PWMMaster;
-}
-}
-
-namespace core {
-namespace QEI_driver {
-class QEI_Delta;
-}
-}
-
-namespace core {
-namespace MC33926_driver {
-class MC33926_SignMagnitude;
+class PWMChannel;
+class ADCConversionGroup;
 }
 }
 
@@ -34,11 +25,75 @@ class Module:
 {
 public:
 // --- DEVICES ----------------------------------------------------------------
-    static core::hw::QEI&       qei;
+    static core::hw::QEI&       qei1;
     static core::hw::PWMMaster& pwm;
+    static core::hw::ADCConversionGroup& current_sense_adc;
 
-    static core::QEI_driver::QEI_Delta& encoder;
-    static core::MC33926_driver::MC33926_SignMagnitude& h_bridge;
+    // H BRIDGE
+    static core::hw::PWMChannel& hbridge_in1;
+    static core::hw::PWMChannel& hbridge_in2;
+    static core::hw::Pad&        hbridge_d1;
+    static core::hw::Pad&        hbridge_d2;
+    static core::hw::Pad&        hbridge_enable;
+    static core::hw::Pad&        hbridge_status_flag;
+    static core::hw::Pad&        hbridge_slew;
+
+    class Encoder1
+    {
+    public:
+        enum class Mode {
+            QEI_ANALOG,
+            QEI_GPIO,
+            GPIO_ANALOG,
+            GPIO
+        };
+
+        static void
+        setMode(
+            Mode mode
+        );
+
+
+        static core::hw::Pad& a;
+        static core::hw::Pad& b;
+        static core::hw::Pad& i;
+        static core::hw::Pad& analog;
+    };
+
+    static Encoder1& encoder1;
+
+    class Encoder2
+    {
+    public:
+        enum class Mode {
+            QEI_ANALOG,
+            QEI_GPIO,
+            GPIO_ANALOG,
+            GPIO,
+            SPI
+        };
+
+        static void
+        setMode(
+            Mode mode
+        );
+
+
+        static core::hw::Pad& a;
+        static core::hw::Pad& b;
+        static core::hw::Pad& i;
+        static core::hw::Pad& analog;
+    };
+
+    enum class Encoder2Mode {
+        QEI_ANALOG,
+        QEI_GPIO,
+        GPIO_ANALOG,
+        GPIO,
+        SPI
+    };
+
+    static Encoder2& encoder2;
 // ----------------------------------------------------------------------------
 
     static bool
