@@ -17,7 +17,7 @@ Module module;
 
 // --- MESSAGES ---------------------------------------------------------------
 #include <core/common_msgs/Led.hpp>
-#include <core/actuator_msgs/Setpoint_f32.hpp>
+#include <core/common_msgs/Float32.hpp>
 
 // --- NODES ------------------------------------------------------------------
 #include <core/sensor_publisher/Publisher.hpp>
@@ -25,8 +25,8 @@ Module module;
 #include <core/led/Subscriber.hpp>
 
 // --- TYPES ------------------------------------------------------------------
-using QEI_Publisher  = core::sensor_publisher::Publisher<ModuleConfiguration::QEI_DELTA_DATATYPE>;
-using PWM_Subscriber = core::actuator_subscriber::Subscriber<float, core::actuator_msgs::Setpoint_f32>;
+using QEI_Publisher  = core::sensor_publisher::Publisher<core::common_msgs::Float32>;
+using PWM_Subscriber = core::actuator_subscriber::Subscriber<float, core::common_msgs::Float32>;
 
 // --- CONFIGURATIONS ---------------------------------------------------------
 core::led::SubscriberConfiguration       led_subscriber_configuration_default;
