@@ -29,9 +29,22 @@ Module module;
 #include <core/led/Subscriber.hpp>
 
 // --- DRIVERS ----------------------------------------------------------------
-core::QEI_driver::QEI qei(Module::qei1);
+core::QEI_driver::QEI
+qei(
+    Module::qei1
+);
+
+
 core::QEI_driver::QEI_Position encoder("qei", qei);
-core::MC33926_driver::MC33926 mc33926(Module::hbridge_in1, Module::hbridge_in2, Module::hbridge_enable, Module::hbridge_d1);
+core::MC33926_driver::MC33926
+mc33926(
+    Module::hbridge_in1,
+    Module::hbridge_in2,
+    Module::hbridge_enable,
+    Module::hbridge_d1
+);
+
+
 core::MC33926_driver::MC33926_SignMagnitude hbridge("hbridge", mc33926);
 core::basic_sensors::TimeAverage average_current("avg_i");
 
@@ -64,8 +77,8 @@ core::hw::PWMMaster::Configuration pwm_configuration = {
     4096,   /* 12-bit PWM, 9KHz frequency. */
     nullptr,
     {
-        {PWM_OUTPUT_ACTIVE_HIGH,NULL                  },
-        {PWM_OUTPUT_ACTIVE_HIGH,NULL                  },
+        {PWM_OUTPUT_ACTIVE_HIGH,NULL                     },
+        {PWM_OUTPUT_ACTIVE_HIGH,NULL                     },
         {PWM_OUTPUT_DISABLED,NULL                     },
         {PWM_OUTPUT_DISABLED,NULL                     }
     },
