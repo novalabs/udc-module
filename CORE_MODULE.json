@@ -1,6 +1,6 @@
 {
   "name": "udc",
-  "description": "uDC",
+  "description": "Nova Core uDC module",
   "chip": "STM32F303CC",
   "required_packages": [
     "stm32_qei",
